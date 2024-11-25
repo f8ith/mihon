@@ -48,6 +48,9 @@ class PagerConfig(
     var landscapeZoom = false
         private set
 
+    var doublePage = true
+        private set
+
     init {
         readerPreferences.readerTheme()
             .register(

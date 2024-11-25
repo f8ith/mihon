@@ -1,6 +1,7 @@
 package eu.kanade.tachiyomi.ui.reader.viewer.pager
 
 import android.graphics.PointF
+import android.provider.ContactsContract.Intents.Insert
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -55,6 +56,11 @@ abstract class PagerViewer(val activity: ReaderActivity) : Viewer {
      * Currently active item. It can be a chapter page or a chapter transition.
      */
     private var currentPage: Any? = null
+
+    /**
+     * Boolean to track whether two pages are currently rendered.
+     */
+    private var doubledUp: Boolean = false
 
     /**
      * Viewer chapters to set when the pager enters idle mode. Otherwise, if the view was settling
@@ -328,6 +334,14 @@ abstract class PagerViewer(val activity: ReaderActivity) : Viewer {
             if (holder != null && config.navigateToPan && holder.canPanRight()) {
                 holder.panRight()
             } else {
+                if (config.doublePage) {
+                    pager.setCurrentItem(pager.currentItem + 1, config.usePageTransitions)
+                    val nextPage = adapter.items.getOrNull(pager.currentItem + 1);
+                    if (nextPage !is InsertPage && nextPage != null) {
+                        pager.setCurrentItem(pager.currentItem + 2, config.usePageTransitions)
+                        return
+                    }
+                }
                 pager.setCurrentItem(pager.currentItem + 1, config.usePageTransitions)
             }
         }
